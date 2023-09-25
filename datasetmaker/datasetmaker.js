@@ -2,10 +2,10 @@ const fs = require('fs');
 const path = require('path');
 
 // Define the path to your UTAU voicebank folder and the file list
-const voicebankFolder = 'Tarou';
-const fileListPath = 'insanitybasicsreclist.txt';
+const voicebankFolder = 'voicebank/vb';
+const fileListPath = 'reclist/reclist.txt';
 const outputFolder = 'Output';
-const numberOfCycles = 2; // Adjust this number as needed
+const numberOfCycles = 1; // Adjust this number as needed
 
 console.log(`Voicebank folder: ${voicebankFolder}`);
 console.log(`File list path: ${fileListPath}`);
@@ -46,8 +46,19 @@ pitchFolders.forEach(folder => {
 // Function to copy a file from source to destination
 function copyFile(source, destination) {
   try {
-    fs.copyFileSync(source, destination);
-    console.log(`Copied file: ${path.basename(source)} - ${path.dirname(source)}`);
+    // Check if the destination file already exists
+    let dest = destination;
+    let counter = 1;
+    while (fs.existsSync(dest)) {
+      const extIndex = destination.lastIndexOf('.'); // Get the last dot
+      const basename = destination.slice(0, extIndex); // File name without extension
+      const ext = destination.slice(extIndex); // File extension
+      dest = `${basename} (${counter})${ext}`; // Append (1), (2), etc.
+      counter++;
+    }
+    
+    fs.copyFileSync(source, dest);
+    console.log(`Copied file: ${path.basename(source)} - ${path.dirname(source)} to ${path.basename(dest)} - ${path.dirname(dest)}`);
   } catch (error) {
     console.error(`Error copying file: ${path.basename(source)} - ${path.dirname(source)}`);
   }
